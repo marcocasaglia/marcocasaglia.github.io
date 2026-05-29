@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marco Casaglia — Homelab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#060d1f;
+--bg2:#0a1428;
+--bg3:#0e1c38;
+--card:#0d1830;
+--border:#1a2d52;
+--border2:#243d6b;
+--accent:#3b9eff;
+--accent2:#00d4aa;
+--accent3:#7c6af7;
+--text:#dce8ff;
+--muted:#5a7aaa;
+--bright:#ffffff;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* STARS BG */
+body::before{
+content:'';position:fixed;inset:0;
+background-image:
+  radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,0.6) 0%,transparent 100%),
+  radial-gradient(1px 1px at 25% 40%,rgba(255,255,255,0.4) 0%,transparent 100%),
+  radial-gradient(1px 1px at 50% 10%,rgba(255,255,255,0.5) 0%,transparent 100%),
+  radial-gradient(1px 1px at 70% 55%,rgba(255,255,255,0.3) 0%,transparent 100%),
+  radial-gradient(1px 1px at 85% 20%,rgba(255,255,255,0.6) 0%,transparent 100%),
+  radial-gradient(1px 1px at 92% 70%,rgba(255,255,255,0.4) 0%,transparent 100%),
+  radial-gradient(1px 1px at 35% 80%,rgba(255,255,255,0.3) 0%,transparent 100%),
+  radial-gradient(1px 1px at 60% 30%,rgba(255,255,255,0.5) 0%,transparent 100%);
+pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,13,31,0.8);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-brand{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:0.05em}
+.nav-brand span{color:var(--muted)}
+.nav-links{display:flex;gap:1.5rem}
+.nav-links a{font-size:13px;color:var(--muted);letter-spacing:0.05em;transition:color 0.2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent2);border:1px solid rgba(0,212,170,0.3);padding:3px 10px;border-radius:2px;display:flex;align-items:center;gap:6px}
+.nav-badge::before{content:'';width:6px;height:6px;background:var(--accent2);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:80px 2rem 4rem;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:10%;left:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(59,158,255,0.06) 0%,transparent 65%);pointer-events:none}
+.hero-glow2{position:absolute;bottom:10%;right:-5%;width:500px;height:500px;background:radial-gradient(circle,rgba(124,106,247,0.05) 0%,transparent 65%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative;z-index:1}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);border:1px solid rgba(59,158,255,0.25);padding:5px 12px;border-radius:3px;margin-bottom:1.5rem;letter-spacing:0.1em;text-transform:uppercase}
+h1{font-size:clamp(2.5rem,5vw,4.2rem);font-weight:800;line-height:1.05;letter-spacing:-0.02em;color:var(--bright);margin-bottom:0.5rem}
+h1 .sub{display:block;font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:400;color:var(--accent);margin-top:0.3rem}
+.hero-desc{color:var(--muted);font-size:1rem;line-height:1.7;margin:1.5rem 0 2rem;max-width:480px}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-primary{background:var(--accent);color:#060d1f;padding:11px 24px;border-radius:6px;font-weight:600;font-size:14px;transition:opacity 0.2s,transform 0.2s}
+.btn-primary:hover{opacity:0.85;transform:translateY(-2px)}
+.btn-outline{border:1px solid var(--border2);color:var(--text);padding:11px 24px;border-radius:6px;font-size:14px;transition:border-color 0.2s,color 0.2s}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* SERVER VISUAL */
+.server-visual{position:relative}
+.server-card{background:linear-gradient(135deg,#0e1c38 0%,#091222 100%);border:1px solid var(--border2);border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+.server-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3))}
+.server-model{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem}
+.server-name{font-size:1.3rem;font-weight:700;color:var(--bright);margin-bottom:1.5rem}
+.server-specs{display:flex;flex-direction:column;gap:10px}
+.spec-row{display:flex;align-items:center;gap:10px;font-size:13px}
+.spec-key{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);min-width:70px;text-transform:uppercase;letter-spacing:0.08em}
+.spec-val{color:var(--text);font-size:12px}
+.spec-val strong{color:var(--accent2)}
+.server-status{display:flex;gap:8px;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.status-item{flex:1;text-align:center}
+.status-num{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--accent)}
+.status-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px}
+
+/* SECTIONS */
+section{padding:5rem 2rem;position:relative;z-index:1}
+.container{max-width:1100px;margin:0 auto}
+.section-header{margin-bottom:3rem}
+.section-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.7rem}
+.section-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:var(--bright);letter-spacing:-0.02em}
+.section-sub{color:var(--muted);margin-top:0.5rem;font-size:0.95rem}
+
+/* PROXMOX SECTION */
+.proxmox-banner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem 2rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem}
+.proxmox-icon{width:48px;height:48px;background:rgba(231,121,30,0.1);border:1px solid rgba(231,121,30,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#e7791e;flex-shrink:0}
+.proxmox-info h3{font-size:1.1rem;font-weight:600;color:var(--bright)}
+.proxmox-info p{font-size:13px;color:var(--muted);margin-top:2px}
+.proxmox-version{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:#e7791e;border:1px solid rgba(231,121,30,0.3);padding:4px 10px;border-radius:3px}
+
+/* VM/LXC GRID */
+.vms-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.vm-group{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.vm-group-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.vm-group-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.lxc-icon{background:rgba(0,212,170,0.1);color:var(--accent2);border:1px solid rgba(0,212,170,0.2)}
+.vm-icon{background:rgba(59,158,255,0.1);color:var(--accent);border:1px solid rgba(59,158,255,0.2)}
+.vm-group-title{font-size:14px;font-weight:600;color:var(--bright)}
+.vm-group-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+.vm-list{padding:1rem 1.5rem;display:flex;flex-direction:column;gap:6px}
+.vm-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(26,45,82,0.5);font-size:13px}
+.vm-item:last-child{border:none}
+.vm-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--accent2)}
+.dot-blue{background:var(--accent)}
+.dot-gray{background:var(--muted)}
+.vm-name{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px}
+.vm-desc{color:var(--muted);font-size:11px;margin-left:auto}
+.vm-test-section{padding:0 1.5rem 1rem}
+.vm-test-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;padding-top:8px;border-top:1px solid var(--border)}
+.vm-test-tags{display:flex;flex-wrap:wrap;gap:5px}
+.test-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);border:1px solid var(--border);padding:2px 8px;border-radius:3px}
+
+/* STORAGE */
+.storage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2rem}
+.storage-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.2rem}
+.storage-type{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px}
+.storage-name{font-size:14px;font-weight:600;color:var(--bright);margin-bottom:2px}
+.storage-size{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--accent2)}
+.storage-unit{font-size:12px;color:var(--muted)}
+.storage-bar{margin-top:10px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.storage-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px}
+.nas-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.2rem;grid-column:1/-1;display:flex;align-items:center;gap:2rem}
+.nas-icon{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent3);background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nas-info h4{font-size:14px;font-weight:600;color:var(--bright)}
+.nas-info p{font-size:12px;color:var(--muted);margin-top:3px}
+.nas-badges{display:flex;gap:6px;margin-top:8px}
+.nas-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent3);border:1px solid rgba(124,106,247,0.2);padding:2px 8px;border-radius:3px}
+
+/* NETWORK */
+.network-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:2rem}
+.net-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.2rem;text-align:center;transition:border-color 0.2s}
+.net-card:hover{border-color:var(--border2)}
+.net-icon{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.net-name{font-size:13px;font-weight:600;color:var(--bright)}
+.net-desc{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);position:relative;z-index:1}
+footer span{color:var(--accent)}
+
+/* DIVIDER */
+.section-divider{border:none;border-top:1px solid var(--border);margin:0}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-content{animation:fadeUp 0.7s ease both}
+.server-visual{animation:fadeUp 0.7s 0.2s ease both}
+
+@media(max-width:768px){
+.hero-inner{grid-template-columns:1fr}
+.vms-grid{grid-template-columns:1fr}
+.nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><span>~/</span>marcocasaglia</div>
+  <div class="nav-links">
+    <a href="#homelab">Homelab</a>
+    <a href="#virtual">VM & LXC</a>
+    <a href="#storage">Storage</a>
+    <a href="#network">Network</a>
+  </div>
+  <div class="nav-badge">online 24/7</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-tag">homelab · perugia, italia</div>
+      <h1>Marco<span class="sub">Casaglia</span></h1>
+      <p class="hero-desc">Tecnico informatico appassionato di infrastrutture IT. Questa è la mia homelab: costruita pezzo per pezzo, giorno dopo giorno. Un laboratorio reale per sperimentare virtualizzazione, networking, cybersecurity e monitoraggio.</p>
+      <div class="hero-cta">
+        <a href="#homelab" class="btn-primary">Esplora la homelab</a>
+        <a href="https://www.marcocasaglia.it" class="btn-outline">marcocasaglia.it</a>
+      </div>
+    </div>
+    <div class="server-visual">
+      <div class="server-card">
+        <div class="server-model">Production Server</div>
+        <div class="server-name">HP ProDesk 600 G6</div>
+        <div class="server-specs">
+          <div class="spec-row">
+            <span class="spec-key">CPU</span>
+            <span class="spec-val">Intel Core <strong>i7-10700</strong> · 16 thread · 2.90GHz</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">RAM</span>
+            <span class="spec-val"><strong>32 GB</strong> DDR4</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">NVMe 1</span>
+            <span class="spec-val">Adata NVMe <strong>1 TB</strong></span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">NVMe 2</span>
+            <span class="spec-val">Patriot NVMe <strong>512 GB</strong></span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">SSD 1</span>
+            <span class="spec-val">Crucial SSD <strong>512 GB</strong></span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">SSD 2</span>
+            <span class="spec-val">Kingston SSD <strong>480 GB</strong></span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">OS</span>
+            <span class="spec-val">Proxmox VE <strong>9.2.2</strong></span>
+          </div>
+        </div>
+        <div class="server-status">
+          <div class="status-item">
+            <div class="status-num">14</div>
+            <div class="status-lbl">Container</div>
+          </div>
+          <div class="status-item">
+            <div class="status-num">6</div>
+            <div class="status-lbl">VM Prod</div>
+          </div>
+          <div class="status-item">
+            <div class="status-num">9</div>
+            <div class="status-lbl">VM Test</div>
+          </div>
+          <div class="status-item">
+            <div class="status-num">2.5TB</div>
+            <div class="status-lbl">Storage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- PROXMOX + VM -->
+<section id="virtual">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">// virtualizzazione</div>
+      <h2 class="section-title">VM & Container LXC</h2>
+      <p class="section-sub">Gestiti su Proxmox VE 9.2.2 — infrastruttura completa di produzione e ambienti di test isolati.</p>
+    </div>
+
+    <div class="proxmox-banner">
+      <div class="proxmox-icon">PVE</div>
+      <div class="proxmox-info">
+        <h3>Proxmox Virtual Environment</h3>
+        <p>Hypervisor tipo 1 basato su KVM + LXC · interfaccia web · cluster-ready</p>
+      </div>
+      <div class="proxmox-version">v9.2.2</div>
+    </div>
+
+    <div class="vms-grid">
+      <!-- LXC -->
+      <div class="vm-group">
+        <div class="vm-group-header">
+          <div class="vm-group-icon lxc-icon">LXC</div>
+          <div class="vm-group-title">Container Linux</div>
+          <div class="vm-group-count">14 attivi</div>
+        </div>
+        <div class="vm-list">
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">snipeit</span><span class="vm-desc">Asset mgmt</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">adguard</span><span class="vm-desc">DNS filter</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">zerotier-one</span><span class="vm-desc">SDN VPN</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">pulse</span><span class="vm-desc">Monitoring</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">rustdesk-server</span><span class="vm-desc">Remote desk</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">zabbix</span><span class="vm-desc">SNMP monitor</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">ngm</span><span class="vm-desc">Network mgmt</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">wazuh</span><span class="vm-desc">SIEM</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">netbird</span><span class="vm-desc">WireGuard mesh</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">authelia</span><span class="vm-desc">SSO / MFA</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">grafana</span><span class="vm-desc">Dashboard</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">authentik</span><span class="vm-desc">Identity provider</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">npmplus</span><span class="vm-desc">Reverse proxy</span></div>
+          <div class="vm-item"><div class="vm-dot dot-green"></div><span class="vm-name">docker</span><span class="vm-desc">Container host</span></div>
+        </div>
+      </div>
+
+      <!-- VM -->
+      <div class="vm-group">
+        <div class="vm-group-header">
+          <div class="vm-group-icon vm-icon">VM</div>
+          <div class="vm-group-title">Macchine Virtuali</div>
+          <div class="vm-group-count">6 prod · 9 test</div>
+        </div>
+        <div class="vm-list">
+          <div class="vm-item"><div class="vm-dot dot-blue"></div><span class="vm-name">nethsecurity8</span><span class="vm-desc">Firewall prod</span></div>
+          <div class="vm-item"><div class="vm-dot dot-blue"></div><span class="vm-name">nethserver8</span><span class="vm-desc">File/mail server</span></div>
+          <div class="vm-item"><div class="vm-dot dot-blue"></div><span class="vm-name">opnsense</span><span class="vm-desc">Firewall alt</span></div>
+          <div class="vm-item"><div class="vm-dot dot-blue"></div><span class="vm-name">guacamole</span><span class="vm-desc">Remote gateway</span></div>
+          <div class="vm-item"><div class="vm-dot dot-blue"></div><span class="vm-name">win10</span><span class="vm-desc">Windows desktop</span></div>
+          <div class="vm-item"><div class="vm-dot dot-blue"></div><span class="vm-name">caine14</span><span class="vm-desc">Digital forensics</span></div>
+        </div>
+        <div class="vm-test-section">
+          <div class="vm-test-label">ambienti di test isolati</div>
+          <div class="vm-test-tags">
+            <span class="test-tag">win10test</span>
+            <span class="test-tag">ipfiretest</span>
+            <span class="test-tag">fedoraWK</span>
+            <span class="test-tag">opnsensetest</span>
+            <span class="test-tag">openmediavault</span>
+            <span class="test-tag">endianfirewalltest</span>
+            <span class="test-tag">fogproject</span>
+            <span class="test-tag">nethvoice8</span>
+            <span class="test-tag">openmediavault</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- STORAGE -->
+<section id="storage" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">// storage</div>
+      <h2 class="section-title">Storage & Backup</h2>
+      <p class="section-sub">Storage locale distribuito su più drive + NAS OpenMediaVault per backup VM e repository ISO.</p>
+    </div>
+    <div class="storage-grid">
+      <div class="storage-card">
+        <div class="storage-type">NVMe PCIe</div>
+        <div class="storage-name">Adata NVMe</div>
+        <div><span class="storage-size">1</span><span class="storage-unit"> TB</span></div>
+        <div class="storage-bar"><div class="storage-fill" style="width:75%"></div></div>
+      </div>
+      <div class="storage-card">
+        <div class="storage-type">NVMe PCIe</div>
+        <div class="storage-name">Patriot NVMe</div>
+        <div><span class="storage-size">512</span><span class="storage-unit"> GB</span></div>
+        <div class="storage-bar"><div class="storage-fill" style="width:60%"></div></div>
+      </div>
+      <div class="storage-card">
+        <div class="storage-type">SSD SATA</div>
+        <div class="storage-name">Crucial SSD</div>
+        <div><span class="storage-size">512</span><span class="storage-unit"> GB</span></div>
+        <div class="storage-bar"><div class="storage-fill" style="width:50%"></div></div>
+      </div>
+      <div class="storage-card">
+        <div class="storage-type">SSD SATA</div>
+        <div class="storage-name">Kingston SSD</div>
+        <div><span class="storage-size">480</span><span class="storage-unit"> GB</span></div>
+        <div class="storage-bar"><div class="storage-fill" style="width:40%"></div></div>
+      </div>
+      <div class="nas-card">
+        <div class="nas-icon">NAS</div>
+        <div class="nas-info">
+          <h4>NAS OpenMediaVault</h4>
+          <p>Storage di rete collegato via SMB/CIFS · backup automatico VM e container · repository ISO centralizzata</p>
+          <div class="nas-badges">
+            <span class="nas-badge">SMB/CIFS</span>
+            <span class="nas-badge">Backup VM</span>
+            <span class="nas-badge">ISO repo</span>
+            <span class="nas-badge">OpenMediaVault</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- NETWORK & SECURITY -->
+<section id="network">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">// network & security</div>
+      <h2 class="section-title">Sicurezza & Monitoring</h2>
+      <p class="section-sub">Stack completo per protezione, monitoraggio e accesso remoto sicuro all'infrastruttura.</p>
+    </div>
+    <div class="network-grid">
+      <div class="net-card">
+        <div class="net-icon" style="background:rgba(231,121,30,0.1);color:#e7791e;border:1px solid rgba(231,121,30,0.2)">NS8</div>
+        <div class="net-name">NethSecurity 8</div>
+        <div class="net-desc">Firewall principale · IDS/IPS · Threat Shield</div>
+      </div>
+      <div class="net-card">
+        <div class="net-icon" style="background:rgba(59,158,255,0.1);color:var(--accent);border:1px solid rgba(59,158,255,0.2)">WAZ</div>
+        <div class="net-name">Wazuh SIEM</div>
+        <div class="net-desc">Security monitoring · log analysis · alerting</div>
+      </div>
+      <div class="net-card">
+        <div class="net-icon" style="background:rgba(0,212,170,0.1);color:var(--accent2);border:1px solid rgba(0,212,170,0.2)">ZBX</div>
+        <div class="net-name">Zabbix</div>
+        <div class="net-desc">SNMP monitoring · metriche · uptime</div>
+      </div>
+      <div class="net-card">
+        <div class="net-icon" style="background:rgba(245,166,35,0.1);color:#f5a623;border:1px solid rgba(245,166,35,0.2)">GRF</div>
+        <div class="net-name">Grafana</div>
+        <div class="net-desc">Dashboard metriche · visualizzazione dati</div>
+      </div>
+      <div class="net-card">
+        <div class="net-icon" style="background:rgba(124,106,247,0.1);color:var(--accent3);border:1px solid rgba(124,106,247,0.2)">AUTH</div>
+        <div class="net-name">Authelia + Authentik</div>
+        <div class="net-desc">SSO centralizzato · MFA · identity provider</div>
+      </div>
+      <div class="net-card">
+        <div class="net-icon" style="background:rgba(59,158,255,0.1);color:var(--accent);border:1px solid rgba(59,158,255,0.2)">VPN</div>
+        <div class="net-name">Netbird + ZeroTier</div>
+        <div class="net-desc">WireGuard mesh VPN · accesso remoto sicuro</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 <span>Marco Casaglia</span> · Homelab Perugia, IT · Proxmox VE 9.2.2 · uptime 24/7</p>
+  <p style="margin-top:6px"><a href="https://www.marcocasaglia.it" style="color:var(--accent)">marcocasaglia.it</a> · <a href="https://linkedin.com/in/marcocasaglia" style="color:var(--accent)">LinkedIn</a> · <a href="https://github.com/Marcocasa88" style="color:var(--accent)">GitHub</a></p>
+</footer>
+
+</body>
+</html>
